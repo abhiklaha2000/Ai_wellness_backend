@@ -7,7 +7,6 @@ admin_router.use(bodyParser.urlencoded({extended:true}));
 
 const adminController = require('../controllers/admin');
 admin_router.get('/nominees/:category_type/admin',adminController.getNomineeByType);
-admin_router.get('/nominees/:category_type/admin',adminController.getNomineeByType);
 
 module.exports = admin_router;
 
