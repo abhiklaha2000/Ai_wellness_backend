@@ -41,9 +41,46 @@ async function createNominees(req,res){
     }
 }
 
+/**
+ * Function to get a nominee by searching
+ * @param {*} req 
+ * @param {*} res 
+ */
+async function getNomineesBySearch(req, res) {
+    try {
+        const { category_type, name } = req.params; // Extract category from URL params
+        // const { name } = req.query; // Extract search query from request
+        // Validate category type
+        const validCategories = ["fitness", "clinics", "forward_thinker", "innovations"];
+        if (!validCategories.includes(category_type)) {
+            return res.status(400).json({ message: "Invalid category type" });
+        }
+        // Build search query
+        let query = { type: category_type }; // Filter by category
+        // If a name is provided, perform a case-insensitive search
+        if (name) {
+            query.name = { $regex: name, $options: "i" }; // "i" makes it case-insensitive
+        }
+        // Fetch matching nominees
+        const nominees = await Nominee.find(query);
+
+        console.log("nominees---", nominees)
+        // Check if nominees exist
+        if (nominees.length === 0) {
+            return res.status(404).json({ message: "No nominees found" });
+        }
+        // Return the nominees
+        res.status(200).json(nominees);
+    } catch (error) {
+        console.error("Error fetching nominees:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
 
 
 module.exports = {
     getAllNominees,
-    createNominees
+    createNominees,
+    getNomineesBySearch
 };
