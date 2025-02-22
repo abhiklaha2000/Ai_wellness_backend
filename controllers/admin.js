@@ -64,7 +64,40 @@ async function getAllVoterList(req, res) {
     }
 }
 
+
+/**
+ * Function to get the user voting details from the vote model 
+ * based on category_type, nominee_name, and user_name from query parameters
+ * @param {*} req 
+ * @param {*} res 
+ */
+async function getUserVotingData(req, res) {
+    try {
+        const { category_type, nominee_name } = req.params;
+        const { user_name } = req.query; // Extract user_name from query params
+        // Validate required parameters
+        if (!category_type || !nominee_name || !user_name) {
+            return res.status(400).json({ error: "category_type, nominee_name, and user_name are required" });
+        }
+        // Find the vote record based on provided criteria
+        const vote = await Vote.findOne({
+            category_type: category_type,
+            vote_to: nominee_name,
+            user_name: user_name
+        });        
+        // Check if the vote record exists
+        if (!vote) {
+            return res.status(404).json({ message: "No voting data found for the specified criteria" });
+        }
+        res.status(200).json(vote);
+    } catch (error) {
+        console.error("Error fetching user voting data:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
 module.exports = {
     getNomineeByType,
-    getAllVoterList
+    getAllVoterList,
+    getUserVotingData
 };
