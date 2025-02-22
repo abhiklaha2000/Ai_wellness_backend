@@ -26,7 +26,7 @@ const nomineeSchema = new mongoose.Schema({
         default: 0, // Default value is 0
         min: 0 // Vote count cannot be negative
     },
-    storage_path: {
+    image_path: {
         type: String,
         default: "", // Default value is an empty string
         trim: true
