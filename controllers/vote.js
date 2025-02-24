@@ -1,13 +1,14 @@
 const mongoose = require("mongoose");
 const Vote = require("../models/vote");
 const Nominee = require("../models/nominee");
+const mail_service = require('../mail_service')
 
 async function createVote(req, res) {
     try {
         const { category_type, vote_to, user_name, email, phone_no, rating_1, rating_2, rating_3, rating_4, nominee_reason, rec_nominee, justification } = req.body;
         // Check if the user has already voted twice in this category
         const existingVotes = await Vote.find({ email, category_type });
-        if (existingVotes.length >= 2) {
+        if (existingVotes.length >= 10) {
             return res.status(400).json({ message: "You can only vote twice per category." });
         }
         // Check if the user has already voted for this nominee in this category
@@ -42,6 +43,8 @@ async function createVote(req, res) {
         });
         // Save the new vote to the database
         await newVote.save();
+        // send the mail after the vote save in the database
+        // await mail_service.sendEmail();
         // Return success response
         res.status(201).json({ message: "Vote created successfully", vote: newVote });
     } catch (err) {
