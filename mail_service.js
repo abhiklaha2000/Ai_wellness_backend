@@ -1,21 +1,23 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config(); // Load environment variables
 
-const sendEmail = async () => {
+const sendEmail = async ({email}) => {
   try {
-    // Create a transporter
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
+      // Configure the SMTP transporter
+      const transporter = nodemailer.createTransport({       // Create a transporter
+        host: process.env.BREVO_SMTP_HOST, // Brevo SMTP host
+        port: process.env.BREVO_SMTP_PORT, // Use 587 for TLS or 465 for SSL
+        secure: false, // False for 587, true for 465
         auth: {
-          user: "abhiklaha2000@gmail.com", // ✅ Fixed typo: "gamil.com" -> "gmail.com"
-          pass: process.env.APP_PASSWORD, // ✅ Removed spaces from App Password
+          user: process.env.BREVO_SMTP_USER, // Replace with your Brevo email
+          pass: process.env.BREVO_SMTP_PASS, // Replace with your SMTP password
         },
       });
       
       // Email options
       const mailOptions = {
-        from: '"Your Name" <abhiklaha2000@gmail.com>',
-        to: "abhiklaha2000@gmail.com",
+        from: '"AI Wellness" <team@aiwellness.ai>',
+        to: email,
         subject: "Test Email from Nodemailer",
         text: "Hello! This is a test email sent using Nodemailer.",
         html: "<b>Hello!</b> This is a test email sent using <i>Nodemailer</i>.",
@@ -23,6 +25,7 @@ const sendEmail = async () => {
 
     // Send the email
     let info = await transporter.sendMail(mailOptions);
+    console.log("info-------", info)
     console.log("Email sent: ", info.messageId);
   } catch (error) {
     console.error("Error sending email: ", error);
